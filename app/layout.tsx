@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
 import { TmdbAuthProvider } from "@/components/tmdb-auth-provider";
 import { WatchlistProvider } from "@/components/watchlist-provider";
+import AppToastHost from "@/components/ui/app-toast";
 
 const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-mono'});
 
@@ -39,6 +40,7 @@ export default function RootLayout({
           <WatchlistProvider>
           <Navbar />
           {children}
+          <AppToastHost />
           </WatchlistProvider>
         </TmdbAuthProvider>
       </body>

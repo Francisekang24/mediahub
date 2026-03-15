@@ -102,7 +102,7 @@ export default function Home() {
             <div className="flex flex-col gap-6">
                 <div className="mx-auto max-w-3xl rounded-lg bg-white/80 p-6 text-center shadow-lg">
                     This website is a hub where I track all the movies, series, Animes I have watched. I'll try to keep it updated as much as possible. You can check out the source code on{" "}
-                    <Link href="https://github.com/yourusername/mediahub" className="text-blue-500 hover:underline">
+                    <Link href="https://github.com/Francisekang24/mediahub" className="text-blue-500 hover:underline">
                         GitHub
                     </Link>                . If you have any suggestions or want to contribute, feel free to open an issue or a pull request!
                 </div>

@@ -113,14 +113,18 @@ export function WatchlistProvider({ children }: { children: React.ReactNode }) {
             }),
         })
 
-        if (response.ok) {
-            if (type === "movie") {
-                setMovieIds((prev) => new Set([...prev, id]))
-            } else {
-                setTvIds((prev) => new Set([...prev, id]))
-            }
-            setRevision((prev) => prev + 1)
+        if (!response.ok) {
+            const payload = await response.json().catch(() => null)
+            const message = typeof payload?.error === "string" ? payload.error : "Unable to add item to watchlist."
+            throw new Error(message)
         }
+
+        if (type === "movie") {
+            setMovieIds((prev) => new Set([...prev, id]))
+        } else {
+            setTvIds((prev) => new Set([...prev, id]))
+        }
+        setRevision((prev) => prev + 1)
     }
 
     async function removeFromWatchlist(id: number, type: "movie" | "tv") {
@@ -136,22 +140,26 @@ export function WatchlistProvider({ children }: { children: React.ReactNode }) {
             }),
         })
 
-        if (response.ok) {
-            if (type === "movie") {
-                setMovieIds((prev) => {
-                    const next = new Set(prev)
-                    next.delete(id)
-                    return next
-                })
-            } else {
-                setTvIds((prev) => {
-                    const next = new Set(prev)
-                    next.delete(id)
-                    return next
-                })
-            }
-            setRevision((prev) => prev + 1)
+        if (!response.ok) {
+            const payload = await response.json().catch(() => null)
+            const message = typeof payload?.error === "string" ? payload.error : "Unable to remove item from watchlist."
+            throw new Error(message)
         }
+
+        if (type === "movie") {
+            setMovieIds((prev) => {
+                const next = new Set(prev)
+                next.delete(id)
+                return next
+            })
+        } else {
+            setTvIds((prev) => {
+                const next = new Set(prev)
+                next.delete(id)
+                return next
+            })
+        }
+        setRevision((prev) => prev + 1)
     }
 
     return (

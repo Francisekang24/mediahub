@@ -4,6 +4,7 @@ import * as React from "react"
 import { Bookmark, BookmarkCheck, Loader2 } from "lucide-react"
 
 import { useWatchlist } from "@/components/watchlist-provider"
+import { showAppToast } from "@/components/ui/app-toast"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -35,9 +36,25 @@ export default function WatchlistButton({
         try {
             if (onList) {
                 await removeFromWatchlist(mediaId, mediaType)
+                showAppToast({
+                    title: "Removed from watchlist",
+                    description: "The title was removed successfully.",
+                    variant: "success",
+                })
             } else {
                 await addToWatchlist(mediaId, mediaType)
+                showAppToast({
+                    title: "Added to watchlist",
+                    description: "The title is now on your watchlist.",
+                    variant: "success",
+                })
             }
+        } catch (error) {
+            showAppToast({
+                title: "Watchlist update failed",
+                description: error instanceof Error ? error.message : "Please try again.",
+                variant: "error",
+            })
         } finally {
             setIsPending(false)
         }
