@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+
+import { Analytics } from "@vercel/analytics/next"
+
 import "./globals.css";
 import { JetBrains_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -36,6 +39,7 @@ export default function RootLayout({
       <body
         className="bg-muted"
       >
+        <Analytics />
         <TmdbAuthProvider>
           <WatchlistProvider>
           <Navbar />
