@@ -7,6 +7,7 @@ const navItems = [
     { label: "Home", href: "/" },
     { label: "Movies", href: "/movies" },
     { label: "Series", href: "/series" },
+    // { label: "Watched Import", href: "/watched-import" },
 ];
 
 export default function Navbar() {

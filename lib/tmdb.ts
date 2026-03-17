@@ -895,27 +895,58 @@ export async function getTmdbList(
   listId: number,
   sessionId?: string
 ): Promise<TmdbListDetail | null> {
-  const data = await tmdbRequestV4<
-    Omit<TmdbListDetail, "items"> & {
-      items?: TmdbMediaResult[];
-      results?: TmdbMediaResult[];
+  type TmdbV4ListPage = Omit<TmdbListDetail, "items"> & {
+    items?: TmdbMediaResult[];
+    results?: TmdbMediaResult[];
+    page?: number;
+    total_pages?: number;
+  };
+
+  function withPage(path: string, page: number) {
+    const separator = path.includes("?") ? "&" : "?";
+    return `${path}${separator}page=${page}`;
+  }
+
+  const basePath = withSessionId(`/list/${listId}`, sessionId);
+  const firstPage = await tmdbRequestV4<TmdbV4ListPage>(
+    withPage(basePath, 1),
+    "GET",
+    undefined,
+    { noStore: true }
+  );
+
+  if (!firstPage) return null;
+
+  const totalPages = Math.max(1, firstPage.total_pages ?? 1);
+  const allItems: TmdbMediaResult[] = [...(firstPage.results ?? firstPage.items ?? [])];
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const nextPage = await tmdbRequestV4<TmdbV4ListPage>(
+      withPage(basePath, page),
+      "GET",
+      undefined,
+      { noStore: true }
+    );
+
+    if (!nextPage) {
+      continue;
     }
-  >(withSessionId(`/list/${listId}`, sessionId), "GET", undefined, { noStore: true });
 
-  if (!data) return null;
+    allItems.push(...(nextPage.results ?? nextPage.items ?? []));
+  }
 
-  const items = (data.results ?? data.items ?? []).map((item) => ({
+  const items = allItems.map((item) => ({
     ...item,
     media_type: item.media_type ?? "movie",
   }));
 
   return {
-    id: data.id,
-    name: data.name,
-    description: data.description,
-    item_count: data.item_count,
-    iso_639_1: data.iso_639_1,
-    poster_path: data.poster_path,
+    id: firstPage.id,
+    name: firstPage.name,
+    description: firstPage.description,
+    item_count: firstPage.item_count,
+    iso_639_1: firstPage.iso_639_1,
+    poster_path: firstPage.poster_path,
     items,
   };
 }
